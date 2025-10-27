@@ -1,13 +1,26 @@
-venv/
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Entornos
+venv/
+.env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Salidas/artefactos
 *.log
 *.gv
 *.png
 *.jpg
 *.jpeg
 *.mp4
-.DS_Store
-.idea/
-.vscode/
 
+# Wheels / binarios
+*.whl
