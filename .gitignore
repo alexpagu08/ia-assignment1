@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+*.log
+*.gv
+*.png
+*.jpg
+*.jpeg
+*.mp4
+.DS_Store
+.idea/
+.vscode/
+
