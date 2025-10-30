@@ -1,65 +1,69 @@
-# algorithms/ids.py
-# --------------------------------------------
-# Implementació de l'algorisme Iterative Deepening Search (IDS)
-# amb un petit exemple per provar-lo directament.
-# --------------------------------------------
-
-def ids(start, is_goal_state, get_successors, max_depth=10):
-    """Iterative Deepening Search (IDS)"""
-    for depth in range(max_depth):
-        print(f"🔍 Depth limit = {depth}")
-        result = dfs_limited(start, is_goal_state, get_successors, depth)
-        if result is not None and result != "cutoff":
-            return result
-    return None
+from hlogedu.search.algorithm import Algorithm, Node, Solution
+from hlogedu.search.containers import Stack
 
 
-def dfs_limited(node, is_goal_state, get_successors, limit):
-    """Depth-Limited Search (DLS)"""
-    print(f"  Exploring {node} (limit={limit})")
+class TreeIds(Algorithm):
+    NAME = "my-tree-ids"
 
-    if is_goal_state(node):
-        return node
-    elif limit == 0:
-        return "cutoff"
+    def __init__(self, problem):
+        super().__init__(problem)
+        self.fringe = Stack()  # 👈 necesario para que el visualizador no falle
 
-    cutoff_occurred = False
-    for successor in get_successors(node):
-        result = dfs_limited(successor, is_goal_state, get_successors, limit - 1)
-        if result == "cutoff":
-            cutoff_occurred = True
-        elif result is not None:
-            return result
-    return "cutoff" if cutoff_occurred else None
+    def run(self):
+        """Iterative Deepening Search (IDS)."""
+        roots = [Node(s) for s in self.problem.get_start_states()]
 
+        # Caso trivial: estado inicial ya es objetivo
+        for n in roots:
+            if self.problem.is_goal_state(n.state):
+                return Solution(self.problem, roots, solution_node=n)
 
-# ===============================
-# === Exemple de prova ==========
-# ===============================
-if __name__ == "__main__":
-    # Grafo simple de prova
-    graph = {
-        "A": ["B", "C"],
-        "B": ["D"],
-        "C": ["E"],
-        "D": ["G"],
-        "E": [],
-        "G": []
-    }
+        limit = 0
+        while True:
+            result = self._dls(roots, limit)
+            if result != "cutoff":
+                return result
+            limit += 1
 
-    def get_successors(node):
-        """Devuelve los sucesores del nodo."""
-        return graph.get(node, [])
+    def _dls(self, roots, limit):
+        """Depth-Limited Search (DLS)."""
+        # ⚠️ Usamos la misma fringe del init (no local)
+        self.fringe = Stack()
+        expanded = set()
+        expand_counter = 0
+        cutoff = False
 
-    def is_goal_state(node):
-        """Verifica si el nodo es el objetivo."""
-        return node == "G"
+        # Inicializar pila con raíces
+        for n in roots:
+            self.fringe.push(n)
 
-    start = "A"
-    print(f"🚀 Starting IDS from {start} to goal 'G'\n")
-    result = ids(start, is_goal_state, get_successors, max_depth=5)
+        while not self.fringe.is_empty():
+            n = self.fringe.pop()
 
-    if result:
-        print(f"\n✅ Goal found: {result}")
-    else:
-        print("\n❌ Goal not found within depth limit.")
+            # Si hemos alcanzado el límite → marcar corte
+            if n.depth == limit:
+                cutoff = True
+                continue
+
+            # Marcar nodo expandido
+            expand_counter += 1
+            n.expand_order = expand_counter
+            n.location = Node.Location.EXPANDED
+            expanded.add(n.state)
+
+            # Generar sucesores ordenados lexicográficamente
+            for s, a, c in sorted(self.problem.get_successors(n.state), key=lambda x: x[0]):
+                ns = Node(s, a, cost=n.cost + c, parent=n)
+                n.add_successor(ns)
+
+                if self.problem.is_goal_state(ns.state):
+                    return Solution(self.problem, roots, solution_node=ns)
+
+                if ns.state not in expanded:
+                    self.fringe.push(ns)
+
+        # Resultado según haya corte o fallo
+        if cutoff:
+            return "cutoff"
+        else:
+            return Solution(self.problem, roots)
