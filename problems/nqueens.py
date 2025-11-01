@@ -170,17 +170,10 @@ class NQueensIterativeRepair(Problem):
 
 @NQueensIterativeRepair.heuristic
 class RepairHeuristic(Heuristic):
-    """
-    h(n) = tamaño de un apareamiento (matching) greedy en el grafo de conflictos.
-    - Nodos: columnas (reinas).
-    - Arista (i,j) si las reinas en columnas i y j se atacan (misma fila o diagonal).
-    - Cada arista del matching exige >= 1 unidad de movimiento de alguna de las dos reinas.
-    => h(n) es cota inferior del coste real: **admisible** (y consistente).
-    """
+    NAME = "RepairHeuristic"
 
     def compute(self, state):
         n = len(state)
-        # 1) aristas de conflicto
         edges = []
         for c1 in range(n):
             r1 = state[c1]
@@ -192,12 +185,12 @@ class RepairHeuristic(Heuristic):
         if not edges:
             return 0
 
-        # 2) matching greedy (parejas disjuntas)
         matched = set()
         msize = 0
         for u, v in edges:
             if u not in matched and v not in matched:
-                matched.add(u); matched.add(v)
+                matched.add(u)
+                matched.add(v)
                 msize += 1
         return msize
 
