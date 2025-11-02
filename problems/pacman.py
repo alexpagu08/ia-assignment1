@@ -227,7 +227,7 @@ class ManhattanHeuristic(Heuristic):
         pacman_r, pacman_c = pacman_pos
         food_r, food_c = food_pos
         
-        # Fórmula de Manhattan: |r1 - r2| + |c1 - c2|
+        # Fórmula de ManhattanSSSSSSS
         distance = abs(pacman_r - food_r) + abs(pacman_c - food_c)
         return distance
 @PacmanProblem.heuristic
@@ -248,7 +248,7 @@ class EuclideanHeuristic(Heuristic):
         pacman_r, pacman_c = pacman_pos
         food_r, food_c = food_pos
         
-        # Fórmula Euclidiana: sqrt((Δr)² + (Δc)²)
+        # Fórmula Euclidiana
         delta_r = pacman_r - food_r
         delta_c = pacman_c - food_c
         distance = math.sqrt(delta_r**2 + delta_c**2)

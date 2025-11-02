@@ -7,7 +7,7 @@ class GraphAstar(Algorithm):
 
     def __init__(self, problem):
         super().__init__(problem)
-        self.fringe = PriorityQueue()  # Cola de prioridad por f(n)
+        self.fringe = PriorityQueue()  
 
     def run(self):
         expand_counter = 0

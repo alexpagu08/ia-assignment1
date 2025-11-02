@@ -7,7 +7,7 @@ class TreeIds(Algorithm):
 
     def __init__(self, problem):
         super().__init__(problem)
-        self.fringe = Stack()  # 👈 necesario para que el visualizador no falle
+        self.fringe = Stack()  
 
     def run(self):
         """Iterative Deepening Search (IDS)."""
@@ -27,7 +27,7 @@ class TreeIds(Algorithm):
 
     def _dls(self, roots, limit):
         """Depth-Limited Search (DLS)."""
-        # ⚠️ Usamos la misma fringe del init (no local)
+        
         self.fringe = Stack()
         expanded = set()
         expand_counter = 0
