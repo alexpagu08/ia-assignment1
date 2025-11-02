@@ -169,28 +169,26 @@ class NQueensIterativeRepair(Problem):
 ##############################################################################
 
 @NQueensIterativeRepair.heuristic
-class RepairHeuristic(Heuristic):
-    NAME = "RepairHeuristic"
-
+class MostConstrainedHeuristic(Heuristic):
+    NAME = "most_constrained"
+    
     def compute(self, state):
+        """
+        Heurística que prioriza estados donde las reinas más conflictivas
+        tienen más restricciones.
+        """
         n = len(state)
-        edges = []
+        conflict_count = [0] * n  # Número de conflictos por reina
+        
+        # Contar conflictos por reina
         for c1 in range(n):
-            r1 = state[c1]
             for c2 in range(c1 + 1, n):
-                r2 = state[c2]
+                r1, r2 = state[c1], state[c2]
+                
                 if r1 == r2 or abs(r1 - r2) == abs(c1 - c2):
-                    edges.append((c1, c2))
-
-        if not edges:
-            return 0
-
-        matched = set()
-        msize = 0
-        for u, v in edges:
-            if u not in matched and v not in matched:
-                matched.add(u)
-                matched.add(v)
-                msize += 1
-        return msize
-
+                    conflict_count[c1] += 1
+                    conflict_count[c2] += 1
+        
+        # Sumar los conflictos de las reinas más problemáticas
+        # Esto estima el esfuerzo mínimo necesario
+        return sum(sorted(conflict_count, reverse=True)[:n//2]) 

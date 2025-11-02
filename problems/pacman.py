@@ -3,10 +3,9 @@ import math
 
 from typing import Any
 
-from hlogedu.search.problem import Problem, action, Categorical
+from hlogedu.search.problem import Problem, action, Categorical,Heuristic
 from hlogedu.search.visualizer import SolutionVisualizer
 from hlogedu.search.common import ClassParameter
-
 # Visualization (you do not have to modify this!)
 ##############################################################################
 
@@ -209,3 +208,48 @@ class PacmanProblem(Problem):
         if 0 <= r <= self.rows and 0 <= c <= self.cols and self.grid[r][c] != "%":
             return ((r, c), new_food)
         return None
+
+@PacmanProblem.heuristic
+class ManhattanHeuristic(Heuristic):
+    NAME = "manhattan"
+    
+    def compute(self, state):
+        """
+        Calcula la distancia de Manhattan entre Pacman y la comida.
+        state: ((pacman_r, pacman_c), food_position)
+        """
+        pacman_pos, food_pos = state
+        
+        # Si no hay comida (estado objetivo), heurística = 0
+        if food_pos is None:
+            return 0
+            
+        pacman_r, pacman_c = pacman_pos
+        food_r, food_c = food_pos
+        
+        # Fórmula de Manhattan: |r1 - r2| + |c1 - c2|
+        distance = abs(pacman_r - food_r) + abs(pacman_c - food_c)
+        return distance
+@PacmanProblem.heuristic
+class EuclideanHeuristic(Heuristic):
+    NAME = "euclidean"
+    
+    def compute(self, state):
+        """
+        Calcula la distancia Euclidiana entre Pacman y la comida.
+        Fórmula: sqrt((r1 - r2)² + (c1 - c2)²)
+        """
+        pacman_pos, food_pos = state
+        
+        # Si no hay comida (estado objetivo), heurística = 0
+        if food_pos is None:
+            return 0
+            
+        pacman_r, pacman_c = pacman_pos
+        food_r, food_c = food_pos
+        
+        # Fórmula Euclidiana: sqrt((Δr)² + (Δc)²)
+        delta_r = pacman_r - food_r
+        delta_c = pacman_c - food_c
+        distance = math.sqrt(delta_r**2 + delta_c**2)
+        return distance
